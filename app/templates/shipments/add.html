@@ -1,0 +1,81 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+  <h2>Ajouter un envoi</h2>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+
+    <!-- Expéditeur -->
+    <h4>Expéditeur</h4>
+    {{ form.sender_mode.label }}<br />
+    {{ form.sender_mode(class="form-check-input") }}<br /><br />
+
+    {% if form.sender_mode.data == 'select' %} {{
+    form.sender_select.label(class="form-label") }} {{
+    form.sender_select(class="form-select") }} {% else %} {{
+    form.sender_name.label(class="form-label") }} {{
+    form.sender_name(class="form-control") }} {{
+    form.sender_phone.label(class="form-label mt-2") }} {{
+    form.sender_phone(class="form-control") }} {{
+    form.sender_address.label(class="form-label mt-2") }} {{
+    form.sender_address(class="form-control") }} {% endif %}
+
+    <hr />
+
+    <!-- Destinataire -->
+    <h4>Destinataire</h4>
+    {{ form.recipient_mode.label }}<br />
+    {{ form.recipient_mode(class="form-check-input") }}<br /><br />
+
+    {% if form.recipient_mode.data == 'select' %} {{
+    form.recipient_select.label(class="form-label") }} {{
+    form.recipient_select(class="form-select") }} {% else %} {{
+    form.recipient_name.label(class="form-label") }} {{
+    form.recipient_name(class="form-control") }} {{
+    form.recipient_phone.label(class="form-label mt-2") }} {{
+    form.recipient_phone(class="form-control") }} {{
+    form.recipient_address.label(class="form-label mt-2") }} {{
+    form.recipient_address(class="form-control") }} {% endif %}
+
+    <hr />
+
+    <!-- Transporteur -->
+    <h4>Transporteur</h4>
+    {{ form.carrier_mode.label }}<br />
+    {{ form.carrier_mode(class="form-check-input") }}<br /><br />
+
+    {% if form.carrier_mode.data == 'select' %} {{
+    form.carrier_select.label(class="form-label") }} {{
+    form.carrier_select(class="form-select") }} {% else %} {{
+    form.carrier_name.label(class="form-label") }} {{
+    form.carrier_name(class="form-control") }} {{
+    form.carrier_phone.label(class="form-label mt-2") }} {{
+    form.carrier_phone(class="form-control") }} {% endif %}
+
+    <hr />
+
+    <!-- Infos colis -->
+    {{ form.destination_city.label(class="form-label") }} {{
+    form.destination_city(class="form-control") }} {{
+    form.package_count.label(class="form-label mt-2") }} {{
+    form.package_count(class="form-control") }} {{
+    form.weight_kg.label(class="form-label mt-2") }} {{
+    form.weight_kg(class="form-control") }} {{
+    form.price.label(class="form-label mt-2") }} {{
+    form.price(class="form-control") }} {{ form.notes.label(class="form-label
+    mt-2") }} {{ form.notes(class="form-control") }}
+
+    <!-- 🆕 Statut -->
+    {{ form.status.label(class="form-label mt-3") }} {{
+    form.status(class="form-select") }}
+
+    <div class="mt-4">
+      {{ form.submit(class="btn btn-primary") }}
+      <a
+        href="{{ url_for('shipments.list_shipments') }}"
+        class="btn btn-secondary"
+        >Annuler</a
+      >
+    </div>
+  </form>
+</div>
+{% endblock %}

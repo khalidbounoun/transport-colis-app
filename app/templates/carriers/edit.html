@@ -1,0 +1,49 @@
+{% extends "base.html" %} {% block content %}
+<div class="card">
+  <div class="card-header">
+    <h4 class="mb-0">Modifier le transporteur: {{ carrier.name }}</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="" novalidate>
+      {{ form.hidden_tag() }}
+
+      <div class="row mb-3">
+        <div class="col-md-6 mb-3">
+          {{ form.name.label(class="form-label") }} {{
+          form.name(class="form-control") }} {% for error in form.name.errors %}
+          <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+        <div class="col-md-6 mb-3">
+          {{ form.phone.label(class="form-label") }} {{
+          form.phone(class="form-control") }} {% for error in form.phone.errors
+          %}
+          <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-12 mb-3">
+          {{ form.notes.label(class="form-label") }} {{
+          form.notes(class="form-control", rows=3) }} {% for error in
+          form.notes.errors %}
+          <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 ms-auto text-end">
+          <a
+            href="{{ url_for('carriers.view_carrier', id=carrier.id) }}"
+            class="btn btn-secondary me-2"
+            >Annuler</a
+          >
+          {{ form.submit(class="btn btn-primary") }}
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

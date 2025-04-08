@@ -1,0 +1,277 @@
+{% extends "base.html" %} {% block content %}
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">Détails du client: {{ client.name }}</h4>
+    <div>
+      <a
+        href="{{ url_for('clients.edit_client', id=client.id) }}"
+        class="btn btn-sm btn-primary me-2"
+      >
+        <i class="bi bi-pencil"></i> Modifier
+      </a>
+      <button
+        type="button"
+        class="btn btn-sm btn-danger"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteModal"
+      >
+        <i class="bi bi-trash"></i> Supprimer
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">Informations personnelles</h5>
+          </div>
+          <div class="card-body">
+            <p class="mb-1"><strong>Nom:</strong> {{ client.name }}</p>
+            <p class="mb-1">
+              <strong>Téléphone:</strong> {{ client.phone or 'Non renseigné' }}
+            </p>
+            <p class="mb-1">
+              <strong>Email:</strong> {{ client.email or 'Non renseigné' }}
+            </p>
+            <p class="mb-1">
+              <strong>Adresse:</strong> {{ client.get_full_address() }}
+            </p>
+            <p class="mb-1">
+              <strong>Type:</strong>
+              {% if client.is_sender and client.is_recipient %} Expéditeur et
+              Destinataire {% elif client.is_sender %} Expéditeur uniquement {%
+              elif client.is_recipient %} Destinataire uniquement {% else %} Non
+              défini {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">Notes</h5>
+          </div>
+          <div class="card-body">
+            <p class="mb-0">{{ client.notes or 'Aucune note' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">Historique des envois</h5>
+          </div>
+          <div class="card-body">
+            <ul class="nav nav-tabs mb-3" id="shipmentTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link active"
+                  id="as-sender-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#as-sender"
+                  type="button"
+                  role="tab"
+                  aria-controls="as-sender"
+                  aria-selected="true"
+                >
+                  En tant qu'expéditeur ({{ client.shipments_as_sender.count()
+                  }})
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="as-recipient-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#as-recipient"
+                  type="button"
+                  role="tab"
+                  aria-controls="as-recipient"
+                  aria-selected="false"
+                >
+                  En tant que destinataire ({{
+                  client.shipments_as_recipient.count() }})
+                </button>
+              </li>
+            </ul>
+            <div class="tab-content" id="shipmentTabsContent">
+              <div
+                class="tab-pane fade show active"
+                id="as-sender"
+                role="tabpanel"
+                aria-labelledby="as-sender-tab"
+              >
+                {% if client.shipments_as_sender.count() > 0 %}
+                <div class="table-responsive">
+                  <table class="table table-sm table-striped">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Destinataire</th>
+                        <th>Destination</th>
+                        <th>Poids</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for shipment in
+                      client.shipments_as_sender.order_by(Shipment.created_at.desc()).limit(5).all()
+                      %}
+                      <tr>
+                        <td>{{ shipment.id }}</td>
+                        <td>{{ shipment.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ shipment.recipient_name }}</td>
+                        <td>{{ shipment.destination_city }}</td>
+                        <td>{{ shipment.weight_kg }} kg</td>
+                        <td>
+                          <a
+                            href="{{ url_for('shipments.view_shipment', id=shipment.id) }}"
+                            class="btn btn-sm btn-outline-primary"
+                          >
+                            <i class="bi bi-eye"></i>
+                          </a>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  {% if client.shipments_as_sender.count() > 5 %}
+                  <div class="text-center mt-2">
+                    <a
+                      href="{{ url_for('shipments.list_shipments', search_term=client.name) }}"
+                      class="btn btn-sm btn-outline-secondary"
+                    >
+                      Voir tous les envois
+                    </a>
+                  </div>
+                  {% endif %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                  Aucun envoi en tant qu'expéditeur.
+                </div>
+                {% endif %}
+              </div>
+              <div
+                class="tab-pane fade"
+                id="as-recipient"
+                role="tabpanel"
+                aria-labelledby="as-recipient-tab"
+              >
+                {% if client.shipments_as_recipient.count() > 0 %}
+                <div class="table-responsive">
+                  <table class="table table-sm table-striped">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Expéditeur</th>
+                        <th>Poids</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for shipment in
+                      client.shipments_as_recipient.order_by(Shipment.created_at.desc()).limit(5).all()
+                      %}
+                      <tr>
+                        <td>{{ shipment.id }}</td>
+                        <td>{{ shipment.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ shipment.sender_name }}</td>
+                        <td>{{ shipment.weight_kg }} kg</td>
+                        <td>
+                          <a
+                            href="{{ url_for('shipments.view_shipment', id=shipment.id) }}"
+                            class="btn btn-sm btn-outline-primary"
+                          >
+                            <i class="bi bi-eye"></i>
+                          </a>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  {% if client.shipments_as_recipient.count() > 5 %}
+                  <div class="text-center mt-2">
+                    <a
+                      href="{{ url_for('shipments.list_shipments', search_term=client.name) }}"
+                      class="btn btn-sm btn-outline-secondary"
+                    >
+                      Voir tous les envois
+                    </a>
+                  </div>
+                  {% endif %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                  Aucun envoi en tant que destinataire.
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-end">
+      <a href="{{ url_for('clients.list_clients') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Retour à la liste
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de suppression -->
+<div
+  class="modal fade"
+  id="deleteModal"
+  tabindex="-1"
+  aria-labelledby="deleteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">
+          Confirmer la suppression
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Êtes-vous sûr de vouloir supprimer le client "{{ client.name }}" ?
+        </p>
+        {% if client.shipments_as_sender.count() > 0 or
+        client.shipments_as_recipient.count() > 0 %}
+        <div class="alert alert-warning">
+          <strong>Attention :</strong> Ce client est associé à des envois. La
+          suppression peut affecter ces enregistrements.
+        </div>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Annuler
+        </button>
+        <form
+          action="{{ url_for('clients.delete_client', id=client.id) }}"
+          method="POST"
+        >
+          <button type="submit" class="btn btn-danger">Supprimer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

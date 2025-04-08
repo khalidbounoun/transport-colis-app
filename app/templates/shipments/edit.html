@@ -1,0 +1,636 @@
+{% extends "base.html" %} {% block content %}
+<div class="card">
+  <div class="card-header">
+    <h4 class="mb-0">Modifier l'envoi #{{ shipment.id }}</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="" novalidate id="shipment-form">
+      {{ form.hidden_tag() }}
+
+      <!-- Champs cachés pour les IDs des tiers -->
+      {{ form.sender_id(id="sender_id") }} {{
+      form.recipient_id(id="recipient_id") }} {{
+      form.carrier_id(id="carrier_id") }}
+
+      <!-- SECTION EXPÉDITEUR -->
+      <div class="mb-4">
+        <h5 class="border-bottom pb-2 mb-3">Information sur l'expéditeur</h5>
+
+        <div class="mb-3">
+          <div class="btn-group w-100" role="group">
+            <input type="radio" class="btn-check" name="sender_mode"
+            id="sender_mode_select" value="select" {{ 'checked' if
+            form.sender_mode.data == 'select' or not form.sender_mode.data else
+            '' }}>
+            <label class="btn btn-outline-primary" for="sender_mode_select"
+              >Sélectionner un expéditeur existant</label
+            >
+
+            <input type="radio" class="btn-check" name="sender_mode"
+            id="sender_mode_new" value="new" {{ 'checked' if
+            form.sender_mode.data == 'new' else '' }}>
+            <label class="btn btn-outline-primary" for="sender_mode_new"
+              >Créer un nouvel expéditeur</label
+            >
+          </div>
+        </div>
+
+        <!-- Mode sélection -->
+        <div
+          id="sender_select_section"
+          class="mode-section mb-3"
+          style="{{ 'display:none;' if form.sender_mode.data == 'new' else '' }}"
+        >
+          <div class="card">
+            <div class="card-body">
+              <div class="mb-3">
+                {{ form.sender_select.label(class="form-label") }} {{
+                form.sender_select(class="form-select client-select",
+                id="sender_select") }} {% for error in form.sender_select.errors
+                %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+
+              <div
+                class="selected-client-card mt-3"
+                id="sender_preview"
+                style="display: none"
+              >
+                <div class="card">
+                  <div
+                    class="card-header d-flex justify-content-between align-items-center bg-light"
+                  >
+                    <h6 class="mb-0" id="sender_preview_name"></h6>
+                    <button
+                      type="button"
+                      class="btn-close clear-selection"
+                      data-target="sender"
+                      aria-label="Supprimer la sélection"
+                    ></button>
+                  </div>
+                  <div class="card-body">
+                    <p class="mb-1">
+                      <i class="bi bi-telephone"></i>
+                      <span id="sender_preview_phone"></span>
+                    </p>
+                    <p class="mb-0">
+                      <i class="bi bi-geo-alt"></i>
+                      <span id="sender_preview_address"></span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode création -->
+        <div
+          id="sender_new_section"
+          class="mode-section"
+          style="{{ 'display:none;' if form.sender_mode.data != 'new' else '' }}"
+        >
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  {{ form.sender_name.label(class="form-label") }} {{
+                  form.sender_name(class="form-control", id="sender_name") }} {%
+                  for error in form.sender_name.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  {{ form.sender_phone.label(class="form-label") }} {{
+                  form.sender_phone(class="form-control", id="sender_phone") }}
+                  {% for error in form.sender_phone.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  {{ form.sender_address.label(class="form-label") }} {{
+                  form.sender_address(class="form-control", id="sender_address")
+                  }} {% for error in form.sender_address.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION DESTINATAIRE -->
+      <div class="mb-4">
+        <h5 class="border-bottom pb-2 mb-3">Information sur le destinataire</h5>
+
+        <div class="mb-3">
+          <div class="btn-group w-100" role="group">
+            <input type="radio" class="btn-check" name="recipient_mode"
+            id="recipient_mode_select" value="select" {{ 'checked' if
+            form.recipient_mode.data == 'select' or not form.recipient_mode.data
+            else '' }}>
+            <label class="btn btn-outline-primary" for="recipient_mode_select"
+              >Sélectionner un destinataire existant</label
+            >
+
+            <input type="radio" class="btn-check" name="recipient_mode"
+            id="recipient_mode_new" value="new" {{ 'checked' if
+            form.recipient_mode.data == 'new' else '' }}>
+            <label class="btn btn-outline-primary" for="recipient_mode_new"
+              >Créer un nouveau destinataire</label
+            >
+          </div>
+        </div>
+
+        <!-- Mode sélection -->
+        <div
+          id="recipient_select_section"
+          class="mode-section mb-3"
+          style="{{ 'display:none;' if form.recipient_mode.data == 'new' else '' }}"
+        >
+          <div class="card">
+            <div class="card-body">
+              <div class="mb-3">
+                {{ form.recipient_select.label(class="form-label") }} {{
+                form.recipient_select(class="form-select client-select",
+                id="recipient_select") }} {% for error in
+                form.recipient_select.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+
+              <div
+                class="selected-client-card mt-3"
+                id="recipient_preview"
+                style="display: none"
+              >
+                <div class="card">
+                  <div
+                    class="card-header d-flex justify-content-between align-items-center bg-light"
+                  >
+                    <h6 class="mb-0" id="recipient_preview_name"></h6>
+                    <button
+                      type="button"
+                      class="btn-close clear-selection"
+                      data-target="recipient"
+                      aria-label="Supprimer la sélection"
+                    ></button>
+                  </div>
+                  <div class="card-body">
+                    <p class="mb-1">
+                      <i class="bi bi-telephone"></i>
+                      <span id="recipient_preview_phone"></span>
+                    </p>
+                    <p class="mb-0">
+                      <i class="bi bi-geo-alt"></i>
+                      <span id="recipient_preview_address"></span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode création -->
+        <div
+          id="recipient_new_section"
+          class="mode-section"
+          style="{{ 'display:none;' if form.recipient_mode.data != 'new' else '' }}"
+        >
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  {{ form.recipient_name.label(class="form-label") }} {{
+                  form.recipient_name(class="form-control", id="recipient_name")
+                  }} {% for error in form.recipient_name.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  {{ form.recipient_phone.label(class="form-label") }} {{
+                  form.recipient_phone(class="form-control",
+                  id="recipient_phone") }} {% for error in
+                  form.recipient_phone.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                  {{ form.recipient_address.label(class="form-label") }} {{
+                  form.recipient_address(class="form-control",
+                  id="recipient_address") }} {% for error in
+                  form.recipient_address.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION INFORMATIONS DE L'ENVOI -->
+      <div class="mb-4">
+        <h5 class="border-bottom pb-2 mb-3">Information sur l'envoi</h5>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            {{ form.destination_city.label(class="form-label") }} {{
+            form.destination_city(class="form-control", id="destination_city")
+            }} {% for error in form.destination_city.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- TRANSPORTEUR -->
+        <div class="mb-3">
+          <div class="btn-group w-100" role="group">
+            <input type="radio" class="btn-check" name="carrier_mode"
+            id="carrier_mode_select" value="select" {{ 'checked' if
+            form.carrier_mode.data == 'select' or not form.carrier_mode.data
+            else '' }}>
+            <label class="btn btn-outline-primary" for="carrier_mode_select"
+              >Sélectionner un transporteur existant</label
+            >
+
+            <input type="radio" class="btn-check" name="carrier_mode"
+            id="carrier_mode_new" value="new" {{ 'checked' if
+            form.carrier_mode.data == 'new' else '' }}>
+            <label class="btn btn-outline-primary" for="carrier_mode_new"
+              >Créer un nouveau transporteur</label
+            >
+          </div>
+        </div>
+
+        <!-- Mode sélection transporteur -->
+        <div
+          id="carrier_select_section"
+          class="mode-section mb-3"
+          style="{{ 'display:none;' if form.carrier_mode.data == 'new' else '' }}"
+        >
+          <div class="card">
+            <div class="card-body">
+              <div class="mb-3">
+                {{ form.carrier_select.label(class="form-label") }} {{
+                form.carrier_select(class="form-select", id="carrier_select") }}
+                {% for error in form.carrier_select.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+
+              <div
+                class="selected-client-card mt-3"
+                id="carrier_preview"
+                style="display: none"
+              >
+                <div class="card">
+                  <div
+                    class="card-header d-flex justify-content-between align-items-center bg-light"
+                  >
+                    <h6 class="mb-0" id="carrier_preview_name"></h6>
+                    <button
+                      type="button"
+                      class="btn-close clear-selection"
+                      data-target="carrier"
+                      aria-label="Supprimer la sélection"
+                    ></button>
+                  </div>
+                  <div class="card-body">
+                    <p class="mb-0">
+                      <i class="bi bi-telephone"></i>
+                      <span id="carrier_preview_phone"></span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode création transporteur -->
+        <div
+          id="carrier_new_section"
+          class="mode-section"
+          style="{{ 'display:none;' if form.carrier_mode.data != 'new' else '' }}"
+        >
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  {{ form.carrier_name.label(class="form-label") }} {{
+                  form.carrier_name(class="form-control", id="carrier_name") }}
+                  {% for error in form.carrier_name.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                  {{ form.carrier_phone.label(class="form-label") }} {{
+                  form.carrier_phone(class="form-control", id="carrier_phone")
+                  }} {% for error in form.carrier_phone.errors %}
+                  <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DÉTAILS DU COLIS -->
+      <div class="mb-4">
+        <h5 class="border-bottom pb-2 mb-3">Détails du colis</h5>
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            {{ form.package_count.label(class="form-label") }} {{
+            form.package_count(class="form-control") }} {% for error in
+            form.package_count.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="col-md-4 mb-3">
+            {{ form.weight_kg.label(class="form-label") }} {{
+            form.weight_kg(class="form-control") }} {% for error in
+            form.weight_kg.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="col-md-4 mb-3">
+            {{ form.price.label(class="form-label") }} {{
+            form.price(class="form-control") }} {% for error in
+            form.price.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="col-12 mb-3">
+            {{ form.notes.label(class="form-label") }} {{
+            form.notes(class="form-control", rows=3) }} {% for error in
+            form.notes.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- BOUTONS D'ACTION -->
+      <div class="row">
+        <div class="col-md-6 ms-auto text-end">
+          <a
+            href="{{ url_for('shipments.view_shipment', id=shipment.id) }}"
+            class="btn btn-secondary me-2"
+            >Annuler</a
+          >
+          {{ form.submit(class="btn btn-primary") }}
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    console.log("Document ready - Edit form version");
+
+    // Définir le mode initial en fonction des données existantes
+    if ($("#sender_id").val()) {
+      $("#sender_mode_select").prop("checked", true).trigger("change");
+    } else if ($("#sender_name").val()) {
+      $("#sender_mode_new").prop("checked", true).trigger("change");
+    }
+
+    if ($("#recipient_id").val()) {
+      $("#recipient_mode_select").prop("checked", true).trigger("change");
+    } else if ($("#recipient_name").val()) {
+      $("#recipient_mode_new").prop("checked", true).trigger("change");
+    }
+
+    if ($("#carrier_id").val()) {
+      $("#carrier_mode_select").prop("checked", true).trigger("change");
+    } else if ($("#carrier_name").val()) {
+      $("#carrier_mode_new").prop("checked", true).trigger("change");
+    }
+
+    // Gestion des modes (sélection vs création)
+    $('input[name="sender_mode"]').change(function () {
+      const mode = $(this).val();
+      if (mode === "select") {
+        $("#sender_select_section").show();
+        $("#sender_new_section").hide();
+      } else {
+        $("#sender_select_section").hide();
+        $("#sender_new_section").show();
+      }
+    });
+
+    $('input[name="recipient_mode"]').change(function () {
+      const mode = $(this).val();
+      if (mode === "select") {
+        $("#recipient_select_section").show();
+        $("#recipient_new_section").hide();
+      } else {
+        $("#recipient_select_section").hide();
+        $("#recipient_new_section").show();
+      }
+    });
+
+    $('input[name="carrier_mode"]').change(function () {
+      const mode = $(this).val();
+      if (mode === "select") {
+        $("#carrier_select_section").show();
+        $("#carrier_new_section").hide();
+      } else {
+        $("#carrier_select_section").hide();
+        $("#carrier_new_section").show();
+      }
+    });
+
+    // Gestion de la sélection d'expéditeur
+    $("#sender_select").change(function () {
+      const selectedId = $(this).val();
+      if (selectedId) {
+        $.ajax({
+          url: "{{ url_for('clients.get_client_json', id=0) }}".replace(
+            "0",
+            selectedId
+          ),
+          type: "GET",
+          dataType: "json",
+          success: function (data) {
+            console.log("Données expéditeur reçues:", data);
+            $("#sender_id").val(data.id);
+            $("#sender_preview_name").text(data.name);
+            $("#sender_preview_phone").text(data.phone || "Non renseigné");
+            $("#sender_preview_address").text(data.address || "Aucune adresse");
+            $("#sender_preview").show();
+          },
+          error: function (xhr, status, error) {
+            console.error(
+              "Erreur lors de la récupération des données de l'expéditeur:",
+              status,
+              error
+            );
+          },
+        });
+      } else {
+        $("#sender_id").val("");
+        $("#sender_preview").hide();
+      }
+    });
+
+    // Gestion de la sélection de destinataire
+    $("#recipient_select").change(function () {
+      const selectedId = $(this).val();
+      if (selectedId) {
+        $.ajax({
+          url: "{{ url_for('clients.get_client_json', id=0) }}".replace(
+            "0",
+            selectedId
+          ),
+          type: "GET",
+          dataType: "json",
+          success: function (data) {
+            console.log("Données destinataire reçues:", data);
+            $("#recipient_id").val(data.id);
+            $("#recipient_preview_name").text(data.name);
+            $("#recipient_preview_phone").text(data.phone || "Non renseigné");
+            $("#recipient_preview_address").text(
+              data.address || "Aucune adresse"
+            );
+            $("#recipient_preview").show();
+
+            if (data.city) {
+              $("#destination_city").val(data.city);
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error(
+              "Erreur lors de la récupération des données du destinataire:",
+              status,
+              error
+            );
+          },
+        });
+      } else {
+        $("#recipient_id").val("");
+        $("#recipient_preview").hide();
+      }
+    });
+
+    // Gestion de la sélection de transporteur
+    $("#carrier_select").change(function () {
+      const selectedId = $(this).val();
+      if (selectedId) {
+        $.ajax({
+          url: "{{ url_for('carriers.get_carrier_json', id=0) }}".replace(
+            "0",
+            selectedId
+          ),
+          type: "GET",
+          dataType: "json",
+          success: function (data) {
+            console.log("Données transporteur reçues:", data);
+            $("#carrier_id").val(data.id);
+            $("#carrier_preview_name").text(data.name);
+            $("#carrier_preview_phone").text(data.phone || "Non renseigné");
+            $("#carrier_preview").show();
+          },
+          error: function (xhr, status, error) {
+            console.error(
+              "Erreur lors de la récupération des données du transporteur:",
+              status,
+              error
+            );
+          },
+        });
+      } else {
+        $("#carrier_id").val("");
+        $("#carrier_preview").hide();
+      }
+    });
+
+    // Gestion des boutons de suppression des sélections
+    $(".clear-selection").click(function () {
+      const target = $(this).data("target");
+      $(`#${target}_select`).val("");
+      $(`#${target}_id`).val("");
+      $(`#${target}_preview`).hide();
+    });
+
+    // Initialisation des aperçus si des IDs sont déjà présents
+    if ($("#sender_id").val() && $("#sender_select").val()) {
+      $("#sender_select").trigger("change");
+    }
+
+    if ($("#recipient_id").val() && $("#recipient_select").val()) {
+      $("#recipient_select").trigger("change");
+    }
+
+    if ($("#carrier_id").val() && $("#carrier_select").val()) {
+      $("#carrier_select").trigger("change");
+    }
+
+    // Logique spécifique à l'édition pour charger les valeurs existantes
+    function loadEntityPreview(entityType, entityId) {
+      if (entityId) {
+        const apiEndpoint =
+          entityType === "carrier"
+            ? "{{ url_for('carriers.get_carrier_json', id=0) }}".replace(
+                "0",
+                entityId
+              )
+            : "{{ url_for('clients.get_client_json', id=0) }}".replace(
+                "0",
+                entityId
+              );
+
+        $.ajax({
+          url: apiEndpoint,
+          type: "GET",
+          dataType: "json",
+          success: function (data) {
+            $(`#${entityType}_preview_name`).text(data.name);
+            $(`#${entityType}_preview_phone`).text(
+              data.phone || "Non renseigné"
+            );
+
+            if (entityType !== "carrier") {
+              $(`#${entityType}_preview_address`).text(
+                data.address || "Aucune adresse"
+              );
+            }
+
+            $(`#${entityType}_preview`).show();
+          },
+          error: function (xhr, status, error) {
+            console.error(
+              `Erreur lors du chargement des données de ${entityType}:`,
+              status,
+              error
+            );
+          },
+        });
+      }
+    }
+
+    // Préchargement des données si nous avons des IDs sans sélection (cas de préchargement)
+    const senderId = $("#sender_id").val();
+    if (senderId && !$("#sender_select").val()) {
+      loadEntityPreview("sender", senderId);
+    }
+
+    const recipientId = $("#recipient_id").val();
+    if (recipientId && !$("#recipient_select").val()) {
+      loadEntityPreview("recipient", recipientId);
+    }
+
+    const carrierId = $("#carrier_id").val();
+    if (carrierId && !$("#carrier_select").val()) {
+      loadEntityPreview("carrier", carrierId);
+    }
+  });
+</script>
+{% endblock %}

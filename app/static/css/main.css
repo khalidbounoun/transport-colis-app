@@ -1,0 +1,107 @@
+/* Styles généraux */
+body {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+footer {
+  margin-top: auto;
+}
+
+/* Styles personnalisés pour les cartes */
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: none;
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Pagination */
+.pagination {
+  margin-bottom: 0;
+}
+
+/* Tableaux */
+.table th {
+  font-weight: 600;
+  background-color: #f8f9fa;
+}
+
+/* Boutons et actions */
+.btn-group-sm > .btn,
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Formulaires */
+.form-label {
+  font-weight: 500;
+}
+
+.text-danger {
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* Alertes */
+.alert {
+  margin-bottom: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+  .table-responsive {
+    border: 0;
+  }
+}
+
+/* Styles pour les champs en lecture seule et liés à une sélection */
+input[readonly] {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  border-color: #ced4da;
+}
+
+/* Style pour montrer qu'un champ est lié à une sélection */
+.linked-field {
+  border-left: 3px solid #198754;
+}
+
+/* Styles pour les messages d'information */
+.info-message {
+  padding: 5px 10px;
+  background-color: #e9f7fe;
+  border-left: 3px solid #198754;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+/* Amélioration des listes déroulantes */
+.form-select {
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-select:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+/* Style pour mettre en évidence un champ modifié */
+.field-modified {
+  background-color: #fff3cd;
+  transition: background-color 0.5s ease;
+}
+

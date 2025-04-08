@@ -1,0 +1,79 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10">
+    <div class="card">
+      <div class="card-body text-center">
+        <h1 class="card-title mb-4">Bienvenue sur ExpressMaroc</h1>
+        <p class="card-text mb-4">
+          Gestion simplifiée des envois de colis entre la France et le Maroc
+        </p>
+
+        {% if current_user.is_anonymous %}
+        <div class="d-grid gap-2 col-md-6 mx-auto">
+          <a href="{{ url_for('auth.login') }}" class="btn btn-primary"
+            >Se connecter</a
+          >
+          <a
+            href="{{ url_for('auth.register') }}"
+            class="btn btn-outline-primary"
+            >Créer un compte</a
+          >
+        </div>
+        {% else %}
+        <div class="d-grid gap-2 col-md-6 mx-auto">
+          <a
+            href="{{ url_for('shipments.list_shipments') }}"
+            class="btn btn-primary"
+            >Voir les envois</a
+          >
+          <a
+            href="{{ url_for('shipments.add_shipment') }}"
+            class="btn btn-outline-primary"
+            >Nouvel envoi</a
+          >
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row mt-5">
+      <div class="col-md-4">
+        <div class="card text-center h-100">
+          <div class="card-body">
+            <i class="bi bi-truck display-4 text-primary mb-3"></i>
+            <h5 class="card-title">Gestion des Transporteurs</h5>
+            <p class="card-text">
+              Enregistrez facilement vos transporteurs indépendants et les colis
+              qu'ils transportent.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center h-100">
+          <div class="card-body">
+            <i class="bi bi-box-seam display-4 text-primary mb-3"></i>
+            <h5 class="card-title">Suivi des Colis</h5>
+            <p class="card-text">
+              Suivez tous vos envois avec leurs détails : poids, prix, nombre de
+              colis et remarques.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center h-100">
+          <div class="card-body">
+            <i class="bi bi-people display-4 text-primary mb-3"></i>
+            <h5 class="card-title">Gestion de Clients</h5>
+            <p class="card-text">
+              Enregistrez les informations des expéditeurs et destinataires pour
+              des envois simplifiés.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
